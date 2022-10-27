@@ -9,7 +9,7 @@ pygame.display.set_caption('Graph Visualizer')
 
 screen = pygame.display.set_mode((800, 800))
 
-objects = []
+nodes = []
 edges = []
 
 
@@ -32,17 +32,17 @@ while running:
             if pygame.mouse.get_pressed()[0]:
                 if mode == 'ADD NODE':
                     pos = pygame.mouse.get_pos()
-                    objects.append(Node(pos))
-                    screen.blit(objects[-1].surf, pos)
+                    nodes.append(Node(pos))
+                    screen.blit(nodes[-1].surf, pos)
                 elif mode == 'ADD EDGE':
                     if start_pos == None:
-                        for o in objects:
+                        for o in nodes:
                             if o.pos.collidepoint(pygame.mouse.get_pos()):
                                 start_pos = o.pos.center
                                 edges.append(Edge(start_pos, start_pos, screen))
                                 break
                     elif end_pos == None:
-                        for o in objects:
+                        for o in nodes:
                             if o.pos.collidepoint(pygame.mouse.get_pos()):
                                 end_pos = o.pos.center
                                 edges[-1].is_connecting = False
@@ -55,12 +55,22 @@ while running:
                     edges.pop()
                     start_pos = None
                 else:
-                    index = None
-                    for i, o in enumerate(objects):
+                    node_index = None
+                    for i, o in enumerate(nodes):
                         if o.pos.collidepoint(pygame.mouse.get_pos()):
-                            index = i
-                    if index != None:
-                        objects.pop(index)
+                            node_index = i
+                    edges_index = []
+                    for i, e in enumerate(edges):
+                        try:
+                            if e.start_pos == nodes[node_index].pos.center or e.end_pos == nodes[node_index].pos.center:
+                                edges_index.append(i)
+                        except TypeError:
+                            break
+                    edges_index = sorted(edges_index, reverse = True)
+                    for i in edges_index:
+                        edges.pop(i)
+                    if node_index != None:
+                        nodes.pop(node_index)
     
     pressed_keys = pygame.key.get_pressed()
 
@@ -69,7 +79,7 @@ while running:
     for e in edges:
         e.update(pressed_keys)
 
-    for o in objects:
+    for o in nodes:
         o.update(pressed_keys)
         screen.blit(o.surf, o.pos)
 
