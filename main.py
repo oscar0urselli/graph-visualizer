@@ -1,62 +1,11 @@
 import pygame
 
-
-
-class Node(pygame.sprite.Sprite):
-    def __init__(self, pos) -> None:
-        self.radius = 16
-        self.value = None
-        self.name = ""
-        self.color = (0, 0, 255)
-        self.surf = pygame.Surface((40, 40), pygame.SRCALPHA)
-        #self.surf.set_colorkey((0, 0, 0))
-        self.pos = pygame.Rect(tuple(map(lambda c: c - self.radius, pos)), (32, 32))
-
-
-        super(Node, self).__init__()
-        pygame.draw.circle(self.surf, (0, 0, 0), (20, 20), 20)
-        self.rect = pygame.draw.circle(self.surf, (0, 0, 255), (20, 20), self.radius)
-
-    def update(self, pressed_keys):
-        if pressed_keys[pygame.K_UP]:
-            self.pos.move_ip(0, 2)
-        if pressed_keys[pygame.K_DOWN]:
-            self.pos.move_ip(0, -2)
-        if pressed_keys[pygame.K_LEFT]:
-            self.pos.move_ip(2, 0)
-        if pressed_keys[pygame.K_RIGHT]:
-            self.pos.move_ip(-2, 0)
-
-class Edge(pygame.sprite.Sprite):
-    def __init__(self, start, end, surf) -> None:
-        self.weight = None
-        self.start_pos = start
-        self.end_pos = end
-        self.color = (53, 172, 176)
-        self.pos = end
-        self.surf = surf
-        self.is_connecting = True
-        self.rect = None
-
-        super(Edge, self).__init__()
-
-    def update(self, pressed_keys):
-        if self.is_connecting:
-            pygame.draw.line(self.surf, self.color, self.start_pos, pygame.mouse.get_pos(), 10)
-        else:
-            self.rect = pygame.draw.line(self.surf, self.color, self.start_pos, self.end_pos, 10)
-        
-        if pressed_keys[pygame.K_UP]:
-            self.pos.move_ip(0, 2)
-        if pressed_keys[pygame.K_DOWN]:
-            self.pos.move_ip(0, -2)
-        if pressed_keys[pygame.K_LEFT]:
-            self.pos.move_ip(2, 0)
-        if pressed_keys[pygame.K_RIGHT]:
-            self.pos.move_ip(-2, 0)
+from graph.node import Node
+from graph.edge import Edge
 
 
 pygame.init()
+pygame.display.set_caption('Graph Visualizer')
 
 screen = pygame.display.set_mode((800, 800))
 
