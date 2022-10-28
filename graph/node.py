@@ -1,10 +1,9 @@
 import pygame
 
 class Node(pygame.sprite.Sprite):
-    def __init__(self, pos) -> None:
+    def __init__(self, pos, value) -> None:
         self.radius = 16
-        self.value = None
-        self.name = ""
+        self.value = value
         self.color = (0, 0, 255)
         self.surf = pygame.Surface((40, 40), pygame.SRCALPHA)
         #self.surf.set_colorkey((0, 0, 0))
