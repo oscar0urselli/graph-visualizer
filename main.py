@@ -56,14 +56,14 @@ while running:
                         for o in nodes:
                             if o.pos.collidepoint(pygame.mouse.get_pos()):
                                 start_pos = o.pos.center
-                                start_node = o.value
+                                start_node = o.id
                                 edges.append(Edge(start_pos, start_pos, screen))
                                 break
                     elif end_pos == None:
                         for o in nodes:
-                            if o.pos.collidepoint(pygame.mouse.get_pos()) and o.value != start_node:
+                            if o.pos.collidepoint(pygame.mouse.get_pos()) and o.id != start_node:
                                 end_pos = o.pos.center
-                                end_node = o.value
+                                end_node = o.id
                                 edges[-1].is_connecting = False
                                 edges[-1].end_pos = end_pos
                                 edges[-1].start_node = start_node
@@ -97,6 +97,12 @@ while running:
                     for i in edges_index:
                         edges.pop(i)
                     if node_index != None:
+                        for g in G:
+                            try:
+                                G[g].remove(nodes[node_index].id)
+                            except ValueError:
+                                pass
+                        G.pop(nodes[node_index].id)
                         nodes.pop(node_index)
     
     pressed_keys = pygame.key.get_pressed()
