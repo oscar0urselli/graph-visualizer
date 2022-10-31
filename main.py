@@ -1,24 +1,33 @@
 import math
+import time
 
 import pygame
 
 from graph.node import Node
 from graph.edge import Edge
-
+from graph.algos import DFS, BFS
 
 
 pygame.init()
 pygame.display.set_caption('Graph Visualizer')
 
 SCREEN_SIZE = pygame.display.get_desktop_sizes()[0]
+MODES = {
+    pygame.K_ESCAPE: 'KILL',
+    pygame.K_e: 'ADD EDGE',
+    pygame.K_n: 'ADD NODE'
+}
 screen = pygame.display.set_mode()
 
 node_counter = 0
+to_change_color = []
+dont_change_color = None
+delay = 1
+start_time = 0
 G = {}
 nodes = []
 edges = []
 
-running = True
 mode = 'ADD NODE'
 start_pos = None
 start_node = None
@@ -32,17 +41,24 @@ bg_primary_color = (20, 20, 20)
 bg_secondary_color = (80, 80, 80)
 
 
-while running:
+while mode != 'KILL':
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            running = False
+            mode = 'KILL'
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:
-                running = False
-            elif event.key == pygame.K_e:
-                mode = 'ADD EDGE'
-            elif event.key == pygame.K_n:
-                mode = 'ADD NODE'
+            try:
+                mode = MODES[event.key]
+            except KeyError:
+                pass
+            
+            if len(nodes) > 0:
+                if event.key == pygame.K_d:
+                    to_change_color = DFS(G).DFS()
+                    start_time = time.time()
+                elif event.key == pygame.K_b:
+                    to_change_color = BFS(G).BFS()
+                    start_time = time.time()
+
         if event.type == pygame.MOUSEBUTTONDOWN:
             if pygame.mouse.get_pressed()[0]:
                 if mode == 'ADD NODE':
@@ -119,6 +135,17 @@ while running:
         e.update(pressed_keys)
 
     for o in nodes:
+        if time.time() - start_time >= delay and start_time != 0:
+            try:
+                if o.id == to_change_color[0]:
+                    o.color = (255, 0, 0)
+                    start_time = time.time()
+                    dont_change_color = to_change_color.pop(0)
+            except IndexError:
+                start_time = 0
+
+        if o.id != dont_change_color:
+            o.color = (0, 0, 255)
         o.update(pressed_keys)
         screen.blit(o.surf, o.pos)
 
