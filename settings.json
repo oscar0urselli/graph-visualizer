@@ -1,0 +1,11 @@
+{
+    "bg": {
+        "line_thickness": 10,
+        "square_size": 200,
+        "bg_primary_color": [20, 20, 20],
+        "bg_secondary_color": [80, 80, 80]
+    },
+    "graphics": {
+        "fps": 144
+    }
+}

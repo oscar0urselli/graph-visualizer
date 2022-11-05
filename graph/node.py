@@ -15,10 +15,19 @@ class Node(pygame.sprite.Sprite):
         pygame.draw.circle(self.surf, (0, 0, 0), (20, 20), 20)
         self.rect = pygame.draw.circle(self.surf, self.color, (20, 20), self.radius)
 
+        self.font = pygame.font.SysFont(None, 24)
+        self.txt = self.font.render(self.id, True, (255, 255, 255))
+
+        w0, h0 = self.txt.get_size()
+        self.surf.blit(self.txt, ((40 - w0) // 2, (40 - h0) // 2))
+
+
     def update(self, pressed_keys):
         if self.__color != self.color:
             self.__color = self.color
             self.rect = pygame.draw.circle(self.surf, self.color, (20, 20), self.radius)
+            w0, h0 = self.txt.get_size()
+            self.surf.blit(self.txt, ((40 - w0) // 2, (40 - h0) // 2))
 
         if pressed_keys[pygame.K_UP]:
             self.pos.move_ip(0, 2)

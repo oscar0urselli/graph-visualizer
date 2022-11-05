@@ -44,3 +44,11 @@ class BFS:
                             q.append(n)
 
         return self.V
+
+class Dijkstra:
+    def __init__(self, graph) -> None:
+        self.G = graph
+        self.V = []
+
+    def Dijkstra(self):
+        return

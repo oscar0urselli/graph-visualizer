@@ -2,7 +2,7 @@ import pygame
 
 class Edge(pygame.sprite.Sprite):
     def __init__(self, start, end, surf) -> None:
-        self.weight = None
+        self.weight = 0
         self.start_node = None
         self.end_node = None
         self.is_bidirectional = True
@@ -19,7 +19,9 @@ class Edge(pygame.sprite.Sprite):
 
     def update(self, pressed_keys):
         if self.is_connecting:
-            pygame.draw.line(self.surf, self.color, self.start_pos, pygame.mouse.get_pos(), 10)
+            posx, posy = pygame.mouse.get_pos()
+            pos = (posx, posy - 36)
+            pygame.draw.line(self.surf, self.color, self.start_pos, pos, 10)
         else:
             self.rect = pygame.draw.line(self.surf, self.color, self.start_pos, self.end_pos, 10)
         
