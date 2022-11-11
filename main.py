@@ -8,6 +8,7 @@ import pygame_gui
 from graph.node import Node
 from graph.edge import Edge
 from graph.algos import DFS, BFS
+from graph.gui import TopBar, ObjectInspector
 import graph.utils
 
 
@@ -44,49 +45,13 @@ start_node, end_node = None, None
 end_pos, start_pos = None, None
 
 ui_manager = pygame_gui.UIManager(SCREEN_SIZE)
-
-file_btn = pygame_gui.elements.UIButton(
-    relative_rect = pygame.Rect((0, 0), (72, 36)),
-    text = 'File',
-    manager = ui_manager
-)
-settings_btn = pygame_gui.elements.UIButton(
-    relative_rect = pygame.Rect((72, 0), (100, 36)),
-    text = 'Settings',
-    manager = ui_manager
-)
-help_btn = pygame_gui.elements.UIButton(
-    relative_rect = pygame.Rect((172, 0), (72, 36)),
-    text = 'Help',
-    manager = ui_manager
-)
-info_panel = pygame_gui.elements.UIPanel(
-    relative_rect = pygame.Rect((1500, 100), (300, 800)),
-    starting_layer_height = 1,
-    manager = ui_manager,
-    visible = 0,
-)
-info_panel_title = pygame_gui.elements.UITextBox(
-    relative_rect = pygame.Rect((0, 0), (294, 36)),
-    html_text = 'Object inspector',
-    manager = ui_manager,
-    container = info_panel
-)
-info_panel_type = pygame_gui.elements.UILabel(
-    relative_rect = pygame.Rect((0, 50), (294, 36)),
-    text = '',
-    manager = ui_manager,
-    container = info_panel
-)
-info_panel_id = pygame_gui.elements.UILabel(
-    relative_rect = pygame.Rect((0, 90), (294, 36)),
-    text = '',
-    manager = ui_manager,
-    container = info_panel
-)
-
+topbar = TopBar(ui_manager, 36)
+obj_inspector = ObjectInspector(ui_manager, (1500, 100), (300, 800))
 
 clock = pygame.time.Clock()
+
+dw = 200
+dh = 200
 
 while mode != 'KILL':
     time_delta = clock.tick(settings['graphics']['fps']) / 1000
@@ -117,7 +82,7 @@ while mode != 'KILL':
             if pygame.mouse.get_pressed()[0]:
                 if mode == 'ADD NODE' and pos[1] > 0:
                     nodes.append(Node(pos, str(node_counter)))
-                    G[str(node_counter)] = []
+                    G[str(node_counter)] = {}
                     node_counter += 1
                     workspace.blit(nodes[-1].surf, pos)
                 elif mode == 'ADD EDGE':
@@ -139,8 +104,8 @@ while mode != 'KILL':
                                 edges[-1].end_node = end_node
 
                                 # Add check if bidirectional
-                                G[start_node].append(end_node)
-                                G[end_node].append(start_node)
+                                G[start_node][end_node] = 0
+                                G[end_node][start_node] = 0
                         
                                 start_pos, end_pos = None, None
                                 start_node, end_node = None, None
@@ -151,13 +116,28 @@ while mode != 'KILL':
                     if o.pos.collidepoint(pos):
                         show = True
 
-                        info_panel_type.set_text('Type: Node')
-                        info_panel_id.set_text('Id: ' + o.id)
+                        obj_inspector.update_label1('Type: Node')
+                        obj_inspector.update_label2('Id: ' + o.id)
+                        obj_inspector.update_label3('Color: ' + str(o.color))
+                        obj_inspector.update_label4('Neighbours: { ' + ', '.join([i[0] + ': ' + str(i[1]) for i in G[o.id].items()]) + ' }')
 
-                        info_panel.show()
-                
+                        obj_inspector.info_panel.show()
+                        break
                 if not show:
-                    info_panel.hide()                    
+                    for e in edges:
+                        if e.rect.collidepoint(pos):
+                            show = True
+
+                            obj_inspector.update_label1('Type: Edge')
+                            obj_inspector.update_label2('Weight: ' + str(e.weight))
+                            obj_inspector.update_label3('Color: ' + str(o.color))
+                            obj_inspector.update_label4(e.start_node + (' <-> ' if e.is_bidirectional else ' --> ') + e.end_node)
+
+                            obj_inspector.info_panel.show()
+                            break
+                
+                if not show:            
+                    obj_inspector.info_panel.hide()
             elif pygame.mouse.get_pressed()[2]:
                 if mode == 'ADD EDGE' and start_pos != None and end_pos == None:
                     edges.pop()
@@ -180,11 +160,27 @@ while mode != 'KILL':
                     if node_index != None:
                         for g in G:
                             try:
-                                G[g].remove(nodes[node_index].id)
-                            except ValueError:
+                                G[g].pop(nodes[node_index].id)
+                            except KeyError:
                                 pass
                         G.pop(nodes[node_index].id)
                         nodes.pop(node_index)
+                        obj_inspector.info_panel.hide()
+                    
+                    edge_node = None
+                    edge_index = None
+                    for i, e in enumerate(edges):
+                        if e.rect.collidepoint(pos):
+                            edge_node = (e.start_node, e.end_node)
+                            edge_index = i
+                    if edge_node != None:
+                        try:
+                            G[edge_node[0]].pop(edge_node[1])
+                            G[edge_node[1]].pop(edge_node[0])
+                            edges.pop(edge_index)
+                            obj_inspector.info_panel.hide()
+                        except KeyError:
+                            pass
 
         ui_manager.process_events(event)
     
@@ -195,13 +191,8 @@ while mode != 'KILL':
         
     screen.blit(application_bar, (0, 0))
     screen.blit(workspace, (0, 36))
-    workspace.fill((135, 94, 81))
-    for y in range(math.ceil(SCREEN_SIZE[1] / settings['bg']['square_size'])):
-        for x in range(math.ceil(SCREEN_SIZE[0] / settings['bg']['square_size'])):
-            square = pygame.Surface((settings['bg']['square_size'], settings['bg']['square_size']))
-            square.fill((28, 27, 27))
-            workspace.blit(square, ((settings['bg']['square_size'] + settings['bg']['line_thickness']) * x, (settings['bg']['square_size'] + settings['bg']['line_thickness']) * y))
-    
+    workspace.fill((28, 27, 27))
+
     for e in edges:
         e.update(pressed_keys)
 
