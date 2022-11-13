@@ -3,6 +3,9 @@ import os
 
 
 def init_settings():
+    """
+    Load the settings from settings.json
+    """
     settings = None
     dir = os.path.join(os.getcwd(), 'settings.json')
     try:
@@ -38,3 +41,14 @@ def init_settings():
             }
 
     return settings
+
+
+def mouse_in_dmz(dmzs, mouse_pos) -> bool:
+    """
+    Check if the mouse is in one of the passed areas
+    """
+    for dmz in dmzs:
+        if dmz.collidepoint(mouse_pos):
+            return True
+
+    return False

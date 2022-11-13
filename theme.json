@@ -1,0 +1,97 @@
+{
+    "button":
+    {
+        "misc":
+        {
+            "tool_tip_delay": "0.3"
+        }
+    },
+    "@topbar_btn":
+    {
+        "colours":
+        {
+            "normal_bg": "#692a1a",
+            "hovered_bg": "#4d1f12",
+            "active_bg": "#70564f"
+        },
+        "misc":
+        {
+            "shape": "rounded_rectangle",
+            "shape_corner_radius": "5",
+            "border_width": "0",
+            "shadow_width": "0"
+        }
+    },
+    "#add_node_btn":
+    {
+        "images":
+        {
+            "normal_image":
+            {
+                "path": "assets/icons/64x64/addnode-64x64.png"
+            },
+            "hovered_image":
+            {
+                "path": "assets/icons/64x64/addnode-64x64-hovered.png"
+            },
+            "selected_image":
+            {
+                "path": "assets/icons/64x64/addnode-64x64-active.png"
+            }
+        }
+    },
+    "#add_bidirectional_edge_btn":
+    {
+        "images":
+        {
+            "normal_image":
+            {
+                "path": "assets/icons/64x64/addedge-64x64.png"
+            },
+            "hovered_image":
+            {
+                "path": "assets/icons/64x64/addedge-64x64-hovered.png"
+            },
+            "selected_image":
+            {
+                "path": "assets/icons/64x64/addedge-64x64-active.png"
+            }
+        }
+    },
+    "#add_directional_edge_btn":
+    {
+        "images":
+        {
+            "normal_image":
+            {
+                "path": "assets/icons/64x64/addedgedir-64x64.png"
+            },
+            "hovered_image":
+            {
+                "path": "assets/icons/64x64/addedgedir-64x64-hovered.png"
+            },
+            "selected_image":
+            {
+                "path": "assets/icons/64x64/addedgedir-64x64-active.png"
+            }
+        }
+    },
+    "#run_algos_btn":
+    {
+        "images":
+        {
+            "normal_image":
+            {
+                "path": "assets/icons/64x64/runalgos-64x64.png"
+            },
+            "hovered_image":
+            {
+                "path": "assets/icons/64x64/runalgos-64x64-hovered.png"
+            },
+            "selected_image":
+            {
+                "path": "assets/icons/64x64/runalgos-64x64-active.png"
+            }
+        }
+    }
+}

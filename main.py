@@ -1,6 +1,5 @@
-import math
 import time
-import json
+import os
 
 import pygame
 import pygame_gui
@@ -8,7 +7,7 @@ import pygame_gui
 from graph.node import Node
 from graph.edge import Edge
 from graph.algos import DFS, BFS
-from graph.gui import TopBar, ObjectInspector
+from graph.gui import TopBar, ToolsBar, ObjectInspector
 import graph.utils
 
 
@@ -17,18 +16,21 @@ settings = graph.utils.init_settings()
 
 pygame.init()
 pygame.display.set_caption('Graph Visualizer')
+pygame.display.set_icon(pygame.image.load('assets/icons/32x32/icon-32x32.png'))
 
 SCREEN_SIZE = pygame.display.get_desktop_sizes()[0]
-MODES = {
-    pygame.K_ESCAPE: 'KILL',
-    pygame.K_e: 'ADD EDGE',
-    pygame.K_n: 'ADD NODE'
-}
+TOP_BAR_HEIGHT = 36
+
 screen = pygame.display.set_mode()
-application_bar = pygame.Surface((SCREEN_SIZE[0], 36))
+application_bar = pygame.Surface((SCREEN_SIZE[0], TOP_BAR_HEIGHT))
 application_bar.fill((105, 42, 26))
-workspace = pygame.Surface((SCREEN_SIZE[0], SCREEN_SIZE[1] - 36))
+workspace = pygame.Surface((SCREEN_SIZE[0], SCREEN_SIZE[1] - TOP_BAR_HEIGHT))
 workspace.fill((135, 94, 81))
+
+DMZS = [
+    pygame.Rect((0, -TOP_BAR_HEIGHT), (SCREEN_SIZE[0], TOP_BAR_HEIGHT)),
+    pygame.Rect((0, 75), (115, 375))
+]
 
 
 node_counter = 0
@@ -41,35 +43,38 @@ nodes = []
 edges = []
 
 mode = 'ADD NODE'
+bidirectional_edge = None
 start_node, end_node = None, None
 end_pos, start_pos = None, None
 
-ui_manager = pygame_gui.UIManager(SCREEN_SIZE)
-topbar = TopBar(ui_manager, 36)
+ui_manager = pygame_gui.UIManager(SCREEN_SIZE, 'theme.json')
+topbar = TopBar(ui_manager, 28, TOP_BAR_HEIGHT)
+tools_bar = ToolsBar(ui_manager)
 obj_inspector = ObjectInspector(ui_manager, (1500, 100), (300, 800))
 
 clock = pygame.time.Clock()
-
-dw = 200
-dh = 200
 
 while mode != 'KILL':
     time_delta = clock.tick(settings['graphics']['fps']) / 1000
     for event in pygame.event.get():
         posx, posy = pygame.mouse.get_pos()
-        pos = (posx, posy - 36)
+        pos = (posx, posy - TOP_BAR_HEIGHT)
 
         if event.type == pygame_gui.UI_BUTTON_PRESSED:
-            pass
-
-        if event.type == pygame.QUIT:
-            mode = 'KILL'
-        if event.type == pygame.KEYDOWN:
-            try:
-                mode = MODES[event.key]
-            except KeyError:
+            if event.ui_element == tools_bar.add_node_btn:
+                mode = 'ADD NODE'
+            elif event.ui_element == tools_bar.add_bidirectional_edge_btn:
+                mode = 'ADD EDGE'
+                bidirectional_edge = True
+            elif event.ui_element == tools_bar.add_directional_edge_btn:
+                mode = 'ADD EDGE'
+                bidirectional_edge = False
+            elif event.ui_element == tools_bar.algorithms_btn:
                 pass
-            
+
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                mode = 'KILL'
             if len(nodes) > 0:
                 if event.key == pygame.K_d:
                     to_change_color = DFS(G).DFS()
@@ -80,7 +85,7 @@ while mode != 'KILL':
 
         if event.type == pygame.MOUSEBUTTONDOWN:
             if pygame.mouse.get_pressed()[0]:
-                if mode == 'ADD NODE' and pos[1] > 0:
+                if mode == 'ADD NODE' and not graph.utils.mouse_in_dmz(DMZS, pos):
                     nodes.append(Node(pos, str(node_counter)))
                     G[str(node_counter)] = {}
                     node_counter += 1
@@ -102,10 +107,11 @@ while mode != 'KILL':
                                 edges[-1].end_pos = end_pos
                                 edges[-1].start_node = start_node
                                 edges[-1].end_node = end_node
+                                edges[-1].is_bidirectional = bidirectional_edge
 
-                                # Add check if bidirectional
                                 G[start_node][end_node] = 0
-                                G[end_node][start_node] = 0
+                                if bidirectional_edge:
+                                    G[end_node][start_node] = 0
                         
                                 start_pos, end_pos = None, None
                                 start_node, end_node = None, None
@@ -176,7 +182,8 @@ while mode != 'KILL':
                     if edge_node != None:
                         try:
                             G[edge_node[0]].pop(edge_node[1])
-                            G[edge_node[1]].pop(edge_node[0])
+                            if edges[edge_index].is_bidirectional:
+                                G[edge_node[1]].pop(edge_node[0])
                             edges.pop(edge_index)
                             obj_inspector.info_panel.hide()
                         except KeyError:
@@ -190,7 +197,7 @@ while mode != 'KILL':
 
         
     screen.blit(application_bar, (0, 0))
-    screen.blit(workspace, (0, 36))
+    screen.blit(workspace, (0, TOP_BAR_HEIGHT))
     workspace.fill((28, 27, 27))
 
     for e in edges:
