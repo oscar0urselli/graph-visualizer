@@ -17,7 +17,7 @@
         "misc":
         {
             "shape": "rounded_rectangle",
-            "shape_corner_radius": "5",
+            "shape_corner_radius": "0",
             "border_width": "0",
             "shadow_width": "0"
         }
@@ -92,6 +92,14 @@
             {
                 "path": "assets/icons/64x64/runalgos-64x64-active.png"
             }
+        }
+    },
+    "@object_inspector_text_box":
+    {
+        "misc":
+        {
+            "border_width": "0",
+            "shadow_width": "0"
         }
     }
 }

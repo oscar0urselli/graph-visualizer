@@ -7,7 +7,7 @@ import pygame_gui
 from graph.node import Node
 from graph.edge import Edge
 from graph.algos import DFS, BFS
-from graph.gui import TopBar, ToolsBar, ObjectInspector
+from graph.gui import TopBar, ToolsBar, ObjectInspector, RunAlgos
 import graph.utils
 
 
@@ -48,9 +48,10 @@ start_node, end_node = None, None
 end_pos, start_pos = None, None
 
 ui_manager = pygame_gui.UIManager(SCREEN_SIZE, 'theme.json')
-topbar = TopBar(ui_manager, 28, TOP_BAR_HEIGHT)
+topbar = TopBar(ui_manager, 36, TOP_BAR_HEIGHT)
 tools_bar = ToolsBar(ui_manager)
 obj_inspector = ObjectInspector(ui_manager, (1500, 100), (300, 800))
+run_algos = RunAlgos(ui_manager, SCREEN_SIZE)
 
 clock = pygame.time.Clock()
 
@@ -70,7 +71,14 @@ while mode != 'KILL':
                 mode = 'ADD EDGE'
                 bidirectional_edge = False
             elif event.ui_element == tools_bar.algorithms_btn:
-                pass
+                if mode == 'RUN ALGOS':
+                    #run_algos.select_panel.hide()
+                    run_algos.hide()
+                    mode = ''
+                else:
+                    mode = 'RUN ALGOS'
+                    #run_algos.select_panel.show()
+                    run_algos.show()
 
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
@@ -97,6 +105,7 @@ while mode != 'KILL':
                                 start_pos = o.pos.center
                                 start_node = o.id
                                 edges.append(Edge(start_pos, start_pos, workspace))
+                                edges[-1].is_bidirectional = bidirectional_edge
                                 break
                     elif end_pos == None:
                         for o in nodes:
@@ -107,7 +116,6 @@ while mode != 'KILL':
                                 edges[-1].end_pos = end_pos
                                 edges[-1].start_node = start_node
                                 edges[-1].end_node = end_node
-                                edges[-1].is_bidirectional = bidirectional_edge
 
                                 G[start_node][end_node] = 0
                                 if bidirectional_edge:
@@ -200,9 +208,13 @@ while mode != 'KILL':
     screen.blit(workspace, (0, TOP_BAR_HEIGHT))
     workspace.fill((28, 27, 27))
 
+    # Update UI
+    run_algos.update(mode)
+
+    # Update edges
     for e in edges:
         e.update(pressed_keys)
-
+    # Update nodes
     for o in nodes:
         if time.time() - start_time >= delay and start_time != 0:
             try:
