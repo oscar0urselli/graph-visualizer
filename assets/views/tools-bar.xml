@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui>
+    <button name="add_node_btn" id="add_node_btn" class="toolsbar_btn" text="" tool_tip_text="Add node" pos="(25, 150)" size="(64, 64)" />
+    <button name="add_undirected_edge_btn" id="add_bidirectional_edge_btn" class="toolsbar_btn" text="" tool_tip_text="Add undirected edge" pos="(25, 230)" size="(64, 64)" />
+    <button name="add_directed_edge_btn" id="add_directional_edge_btn" class="toolsbar_btn" text="" tool_tip_text="Add directed node" pos="(25, 310)" size="(64, 64)" />
+    <button name="run_algos_btn" id="run_algos_btn" class="toolsbar_btn" text="" tool_tip_text="Select an algorithm to run" pos="(25, 390)" size="(64, 64)" />
+</ui>

@@ -101,5 +101,41 @@
             "border_width": "0",
             "shadow_width": "0"
         }
+    },
+    "#minimize_btn":
+    {
+        "images":
+        {
+            "normal_image":
+            {
+                "path": "assets/icons/minimize-icon-normal.png"
+            },
+            "hovered_image":
+            {
+                "path": "assets/icons/minimize-icon-hovered.png"
+            },
+            "selected_image":
+            {
+                "path": "assets/icons/minimize-icon-active.png"
+            }
+        }
+    },
+    "#close_btn":
+    {
+        "images":
+        {
+            "normal_image":
+            {
+                "path": "assets/icons/close-icon-normal.png"
+            },
+            "hovered_image":
+            {
+                "path": "assets/icons/close-icon-hovered.png"
+            },
+            "selected_image":
+            {
+                "path": "assets/icons/close-icon-active.png"
+            }
+        }
     }
 }

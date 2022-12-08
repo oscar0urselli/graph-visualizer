@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui>
+    <windowmod name="select_panel" window_display_title="Select an algorithm to run:" pos="(WIDTH / 2 - 800 / 2, HEIGHT / 2 - 400 / 2)" size="(800, 400)" visible="0">
+        <dropdownmenu name="algos_selection" options_list="DFS;BFS;Dijkstra" starting_option="DFS" pos="(0, 0)" size="(800 - 32, 36)" />
+        <textbox name="algo_name" html_text="" pos="(0, 36)" size="(800 - 32, 36)" />
+        <textbox name="delay_text_box" html_text="Delay: 1.0 s" pos="(0, 236)" size="(800 - 32, 30)" />
+        <horizontalslider name="delay_slider" start_value="1" value_range="(0.01, 2)" click_increment="0.01" pos="(0, 259)" size="(800 - 32, 30)" />
+        <button name="run_btn" text="Run" tool_tip_text="Run the selected algorithm" pos="(0, 304)" size="(800 - 32, 36)" />
+
+        
+        <panel name="dfs_panel" starting_layer_height="2" visible="0" pos="(0, 120)" size="(800 - 32, 400 - 340)">
+        </panel>
+        <panel name="bfs_panel" starting_layer_height="2" visible="0" pos="(0, 120)" size="(800 - 32, 400 - 340)">
+        </panel>
+        <panel name="dijkstra_panel" starting_layer_height="2" visible="0" pos="(0, 120)" size="(800 - 32, 400 - 340)">
+        </panel>
+    </windowmod>
+</ui>

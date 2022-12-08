@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui>
+    <div name="top-bar">
+        <image name="app_icon" src="assets/icons/512x512/icon-512x512.png" pos="(0, 0)" size="(36, 36)" />
+        <button name="file_btn" id="file_btn" class="topbar_btn" text="File" tool_tip_text="" pos="(36, 0)" size="(60, 36)" />
+        <button name="settings_btn" id="settings_btn" class="topbar_btn" text="Settings" tool_tip_text="" pos="(96, 0)" size="(90, 36)" />
+        <button name="help_btn" id="help_btn" class="topbar_btn" text="Help" tool_tip_text="" pos="(186, 0)" size="(60, 36)" />
+        <button name="minimize_btn" id="minimize_btn" class="topbar_btn" text="" tool_tip_text="" pos="(WIDTH - 92, 0)" size="(46, 36)" />
+        <button name="close_btn" id="close_btn" class="topbar_btn" text="" tool_tip_text="" pos="(WIDTH - 46, 0)" size="(46, 36)" />
+    </div>
+</ui>

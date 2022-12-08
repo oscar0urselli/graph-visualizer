@@ -7,7 +7,7 @@ import pygame_gui
 from graph.node import Node
 from graph.edge import Edge
 from graph.algos import DFS, BFS
-from graph.gui import TopBar, ToolsBar, ObjectInspector, RunAlgos
+from graph.gui import UIWidget
 import graph.utils
 
 
@@ -36,7 +36,6 @@ DMZS = [
 node_counter = 0
 to_change_color = []
 dont_change_color = None
-delay = 1
 start_time = 0
 G = {}
 nodes = []
@@ -46,12 +45,14 @@ mode = 'ADD NODE'
 bidirectional_edge = None
 start_node, end_node = None, None
 end_pos, start_pos = None, None
+delay = 1.0
 
 ui_manager = pygame_gui.UIManager(SCREEN_SIZE, 'theme.json')
-topbar = TopBar(ui_manager, 36, TOP_BAR_HEIGHT)
-tools_bar = ToolsBar(ui_manager)
-obj_inspector = ObjectInspector(ui_manager, (1500, 100), (300, 800))
-run_algos = RunAlgos(ui_manager, SCREEN_SIZE)
+topbar = UIWidget('./assets/views/top-bar.xml', SCREEN_SIZE, ui_manager).parse()
+tools_bar = UIWidget('./assets/views/tools-bar.xml', SCREEN_SIZE, ui_manager).parse()
+node_inspector = UIWidget('./assets/views/node-inspector.xml', SCREEN_SIZE, ui_manager).parse()
+edge_inspector = UIWidget('./assets/views/edge-inspector.xml', SCREEN_SIZE, ui_manager).parse()
+run_algos = UIWidget('./assets/views/run-algos.xml', SCREEN_SIZE, ui_manager).parse()
 
 clock = pygame.time.Clock()
 
@@ -62,38 +63,45 @@ while mode != 'KILL':
         pos = (posx, posy - TOP_BAR_HEIGHT)
 
         if event.type == pygame_gui.UI_BUTTON_PRESSED:
-            if event.ui_element == tools_bar.add_node_btn:
+            if event.ui_element == tools_bar['add_node_btn']:
                 mode = 'ADD NODE'
-            elif event.ui_element == tools_bar.add_bidirectional_edge_btn:
+            elif event.ui_element == tools_bar['add_undirected_edge_btn']:
                 mode = 'ADD EDGE'
                 bidirectional_edge = True
-            elif event.ui_element == tools_bar.add_directional_edge_btn:
+            elif event.ui_element == tools_bar['add_directed_edge_btn']:
                 mode = 'ADD EDGE'
                 bidirectional_edge = False
-            elif event.ui_element == tools_bar.algorithms_btn:
+            elif event.ui_element == tools_bar['run_algos_btn']:
                 if mode == 'RUN ALGOS':
-                    #run_algos.select_panel.hide()
-                    run_algos.hide()
+                    run_algos['select_panel'].hide()
                     mode = ''
                 else:
                     mode = 'RUN ALGOS'
-                    #run_algos.select_panel.show()
-                    run_algos.show()
-
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:
-                mode = 'KILL'
-            if len(nodes) > 0:
-                if event.key == pygame.K_d:
+                    run_algos['select_panel'].show()
+            elif event.ui_element == run_algos['run_btn']:
+                if run_algos['algos_selection'].selected_option == 'DFS':
                     to_change_color = DFS(G).DFS()
-                    start_time = time.time()
-                elif event.key == pygame.K_b:
+                elif run_algos['algos_selection'].selected_option == 'BFS':
                     to_change_color = BFS(G).BFS()
-                    start_time = time.time()
+                elif run_algos['algos_selection'].selected_option == 'Dijkstra':
+                    pass
+                start_time = time.time()
+                mode = ''
+            elif event.ui_element == topbar['minimize_btn']:
+                pygame.display.iconify()
+            elif event.ui_element == topbar['close_btn']:
+                mode = 'KILL'
+            elif event.ui_element == run_algos['select_panel'].close_window_button:
+                mode = ''
+
+        if event.type == pygame.QUIT:
+            mode = 'KILL'
+        if event.type == pygame.VIDEORESIZE:
+            screen = pygame.display.set_mode((event.w, event.h), pygame.RESIZABLE)
 
         if event.type == pygame.MOUSEBUTTONDOWN:
-            if pygame.mouse.get_pressed()[0]:
-                if mode == 'ADD NODE' and not graph.utils.mouse_in_dmz(DMZS, pos):
+            if pygame.mouse.get_pressed()[0] and not graph.utils.mouse_in_dmz(DMZS, pos):
+                if mode == 'ADD NODE':
                     nodes.append(Node(pos, str(node_counter)))
                     G[str(node_counter)] = {}
                     node_counter += 1
@@ -130,28 +138,40 @@ while mode != 'KILL':
                     if o.pos.collidepoint(pos):
                         show = True
 
-                        obj_inspector.update_label1('Type: Node')
-                        obj_inspector.update_label2('Id: ' + o.id)
-                        obj_inspector.update_label3('Color: ' + str(o.color))
-                        obj_inspector.update_label4('Neighbours: { ' + ', '.join([i[0] + ': ' + str(i[1]) for i in G[o.id].items()]) + ' }')
+                        node_inspector['id'].html_text = 'Id: ' + o.id
+                        node_inspector['id'].rebuild()
 
-                        obj_inspector.info_panel.show()
+                        node_inspector['color'].html_text = 'Color: ' + str(o.color)
+                        node_inspector['color'].rebuild()
+
+                        node_inspector['neighbours'].html_text = 'Neighbours: { ' + ', '.join([i[0] + ': ' + str(i[1]) for i in G[o.id].items()]) + ' }'
+                        node_inspector['neighbours'].rebuild()
+
+                        node_inspector['node-inspector'].show()
+                        edge_inspector['edge-inspector'].hide()
+
                         break
                 if not show:
                     for e in edges:
                         if e.rect.collidepoint(pos):
                             show = True
 
-                            obj_inspector.update_label1('Type: Edge')
-                            obj_inspector.update_label2('Weight: ' + str(e.weight))
-                            obj_inspector.update_label3('Color: ' + str(o.color))
-                            obj_inspector.update_label4(e.start_node + (' <-> ' if e.is_bidirectional else ' --> ') + e.end_node)
+                            edge_inspector['color'].html_text = 'Color: ' + str(e.color)
+                            edge_inspector['color'].rebuild()
 
-                            obj_inspector.info_panel.show()
+                            edge_inspector['way'].html_text = e.start_node + (' <-> ' if e.is_bidirectional else ' --> ') + e.end_node
+                            edge_inspector['way'].rebuild()
+
+                            edge_inspector['weight'].set_text(str(e.weight))
+
+                            edge_inspector['edge-inspector'].show()
+                            node_inspector['node-inspector'].hide()
+
                             break
                 
-                if not show:            
-                    obj_inspector.info_panel.hide()
+                if not show:
+                    node_inspector['node-inspector'].hide()
+                    edge_inspector['edge-inspector'].hide()
             elif pygame.mouse.get_pressed()[2]:
                 if mode == 'ADD EDGE' and start_pos != None and end_pos == None:
                     edges.pop()
@@ -179,7 +199,7 @@ while mode != 'KILL':
                                 pass
                         G.pop(nodes[node_index].id)
                         nodes.pop(node_index)
-                        obj_inspector.info_panel.hide()
+                        node_inspector['node-inspector'].hide()
                     
                     edge_node = None
                     edge_index = None
@@ -193,7 +213,7 @@ while mode != 'KILL':
                             if edges[edge_index].is_bidirectional:
                                 G[edge_node[1]].pop(edge_node[0])
                             edges.pop(edge_index)
-                            obj_inspector.info_panel.hide()
+                            edge_inspector['edge-inspector'].hide()
                         except KeyError:
                             pass
 
@@ -209,8 +229,29 @@ while mode != 'KILL':
     workspace.fill((28, 27, 27))
 
     # Update UI
-    run_algos.update(mode)
+    if run_algos['delay_slider'].get_current_value() != delay:
+        delay = run_algos['delay_slider'].get_current_value()
+        run_algos['delay_text_box'].html_text = 'Delay: ' + str(round(delay, 2)) + ' s'
+        run_algos['delay_text_box'].rebuild()
 
+    if run_algos['algo_name'].html_text != run_algos['algos_selection'].selected_option:
+        run_algos['algo_name'].html_text = run_algos['algos_selection'].selected_option
+        run_algos['algo_name'].rebuild()
+
+    if mode == 'RUN ALGOS':
+        if run_algos['algos_selection'].selected_option == 'DFS':
+            run_algos['dfs_panel'].show()
+            run_algos['bfs_panel'].hide()
+            run_algos['dijkstra_panel'].hide()
+        elif run_algos['algos_selection'].selected_option == 'BFS':
+            run_algos['bfs_panel'].show()
+            run_algos['dfs_panel'].hide()
+            run_algos['dijkstra_panel'].hide()
+        elif run_algos['algos_selection'].selected_option == 'Dijkstra':
+            run_algos['dijkstra_panel'].show()
+            run_algos['dfs_panel'].hide()
+            run_algos['bfs_panel'].hide()
+    
     # Update edges
     for e in edges:
         e.update(pressed_keys)
