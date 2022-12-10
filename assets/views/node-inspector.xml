@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui>
-    <windowmod name="node-inspector" window_display_title="Object inspector" pos="(WIDTH - 400, 100)" size="(300, 600)" visible="0">
+    <windowmod name="node-inspector" window_display_title="Object inspector" pos="(WIDTH - 400, 100)" size="(300, 500)" visible="0">
         <textbox name="type" id="node_inspector_type" class="object_inspector_text_box" html_text="Type: Node" pos="(0, 50)" size="(294, 36)" />
         <textbox name="id" id="node_inspector_id" class="object_inspector_text_box" html_text="" pos="(0, 90)" size="(294, 36)" />
         <textbox name="color" id="node_inspector_color" class="object_inspector_text_box" html_text="" pos="(0, 130)" size="(294, 36)" />

@@ -81,7 +81,9 @@ class UIWidget:
                 manager = self.manager,
                 container = container,
                 object_id = object_id
-            )
+            )   
+            if len(attrib['tool_tip_text']) == 0:
+                element.tool_tip_text = None
         elif tag == 'textbox':
             element = self.ui_elements[tag](
                 relative_rect = rect,

@@ -22,6 +22,18 @@
             "shadow_width": "0"
         }
     },
+    "#top-bar-panel":
+    {
+        "colours":
+        {
+            "dark_bg": "#692a1a"
+        },
+        "misc":
+        {
+            "border_width": "0",
+            "shadow_width": "0"
+        }
+    },
     "#add_node_btn":
     {
         "images":

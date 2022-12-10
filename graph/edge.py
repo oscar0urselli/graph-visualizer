@@ -1,8 +1,12 @@
 import pygame
 import math
+import uuid
 
 class Edge(pygame.sprite.Sprite):
     def __init__(self, start, end, surf) -> None:
+        self.uuid = uuid.uuid4()
+        self.type = 'Edge'
+        
         self.weight = 0
         self.start_node = None
         self.end_node = None
@@ -20,8 +24,7 @@ class Edge(pygame.sprite.Sprite):
 
     def update(self, pressed_keys):
         if self.is_connecting:
-            posx, posy = pygame.mouse.get_pos()
-            pos = (posx, posy - 36)
+            pos = pygame.mouse.get_pos()
             pygame.draw.line(self.surf, self.color, self.start_pos, pos, 10)
             
             if not self.is_bidirectional:
@@ -46,6 +49,7 @@ class Edge(pygame.sprite.Sprite):
 
     def arrow_points(self, A, B, l) -> "tuple[tuple[float, float], tuple[float, float], tuple[float, float]]":
         AB = math.sqrt((A[0] - B[0]) ** 2 + (A[1] - B[1]) ** 2)
+        AB = AB if AB > 0 else float('+inf')
         theta = math.asin(math.sqrt((A[1] - B[1]) ** 2) / AB)
         R = l
 

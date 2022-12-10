@@ -1,7 +1,11 @@
 import pygame
+import uuid
 
 class Node(pygame.sprite.Sprite):
     def __init__(self, pos, id) -> None:
+        self.uuid = uuid.uuid4()
+        self.type = 'Node'
+        
         self.radius = 16
         self.id = id
         self.__color = (0, 0, 255)

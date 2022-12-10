@@ -8,11 +8,16 @@
         <button name="run_btn" text="Run" tool_tip_text="Run the selected algorithm" pos="(0, 304)" size="(800 - 32, 36)" />
 
         
-        <panel name="dfs_panel" starting_layer_height="2" visible="0" pos="(0, 120)" size="(800 - 32, 400 - 340)">
+        <panel name="dfs_panel" starting_layer_height="2" visible="0" pos="(0, 72)" size="(800 - 32, 165)">
         </panel>
-        <panel name="bfs_panel" starting_layer_height="2" visible="0" pos="(0, 120)" size="(800 - 32, 400 - 340)">
+        <panel name="bfs_panel" starting_layer_height="2" visible="0" pos="(0, 72)" size="(800 - 32, 165)">
         </panel>
-        <panel name="dijkstra_panel" starting_layer_height="2" visible="0" pos="(0, 120)" size="(800 - 32, 400 - 340)">
+        <panel name="dijkstra_panel" starting_layer_height="2" visible="0" pos="(0, 72)" size="(800 - 32, 165)">
+            <textbox name="select_start_node" html_text="Start node:" pos="(0, 0)" size="(110, 36)" />
+            <textentryline name="start_node" white_list="numbers" pos="(110, 0)" size="(110, 36)" />
+
+            <textbox name="select_end_node" html_text="End node:" pos="(240, 0)" size="(110, 36)" />
+            <textentryline name="end_node" white_list="numbers" pos="(350, 0)" size="(110, 36)" />
         </panel>
     </windowmod>
 </ui>
